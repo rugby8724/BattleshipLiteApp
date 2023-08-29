@@ -47,14 +47,25 @@ namespace BattleshipLiteLibrary
             throw new NotImplementedException();
         }
 
-        public static bool PlaceShip(PlayerInfoModel playermodel, string? location)
+        public static bool PlaceShip(PlayerInfoModel playermodel, string location)
         {
             throw new NotImplementedException();
         }
 
-        public static bool PlayerStillActive(PlayerInfoModel opponent)
+        public static bool PlayerStillActive(PlayerInfoModel player)
         {
-            throw new NotImplementedException();
+            bool isActive = false;
+
+            foreach (var ship in player.ShipLocations)
+            {
+                if (ship.Status != GridSpotStaus.Sunk)
+                {
+                    isActive = true;
+                }
+                
+            }
+
+            return isActive;
         }
 
         public static (string row, int column) SplitShotIntoRowAndColumn(string shot)
