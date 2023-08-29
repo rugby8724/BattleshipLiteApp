@@ -85,9 +85,9 @@ string AskForShot()
 
 void DisplayShotGrid(PlayerInfoModel activePlayer)
 {
-    string currentRow = activePlayer.ShortGrid[0].SpotLetter;
+    string currentRow = activePlayer.ShotGrid[0].SpotLetter;
 
-    foreach (var gridSpot in activePlayer.ShortGrid)
+    foreach (var gridSpot in activePlayer.ShotGrid)
     {
         if(gridSpot.SpotLetter != currentRow)
         {

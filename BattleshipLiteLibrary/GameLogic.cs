@@ -13,18 +13,30 @@ namespace BattleshipLiteLibrary
         {
             int shotCount = 0;
 
-            foreach (var shot in player.ShortGrid)
+            foreach (var shot in player.ShotGrid)
             {
                 if (shot.Status != GridSpotStaus.Empty) 
                 {
                     shotCount++;
                 }
             }
+
+            return shotCount;
         }
 
         public static bool IdentifyShotResult(PlayerInfoModel opponent, string row, int column)
         {
-            throw new NotImplementedException();
+            bool isAHit = false;
+
+            foreach (var ship in opponent.ShipLocations)
+            {
+                if (ship.SpotLetter == row.ToUpper() && ship.SpotNumber == column)
+                {
+                    isAHit = true;
+                }
+            }
+
+            return isAHit;
         }
 
         public static void InitializeGrid(PlayerInfoModel playerModel)
@@ -50,14 +62,81 @@ namespace BattleshipLiteLibrary
 
         }
 
-        public static void MarkShotResult(PlayerInfoModel activePlayer, string row, int column, bool isAHit)
+        public static void MarkShotResult(PlayerInfoModel player, string row, int column, bool isAHit)
         {
-            throw new NotImplementedException();
+            bool isValidHit = false;
+
+            foreach (var gridSpot in player.ShotGrid)
+            {
+                if (gridSpot.SpotLetter == row.ToUpper() && gridSpot.SpotNumber == column)
+                {
+                    if (isAHit)
+                    {
+                        gridSpot.Status = GridSpotStaus.Hit;
+                    }
+                    else
+                    {
+                        gridSpot.Status = GridSpotStaus.Miss;
+                    }
+
+                }
+            }
         }
 
         public static bool PlaceShip(PlayerInfoModel playermodel, string location)
         {
-            throw new NotImplementedException();
+            bool output = false;
+            (string row, int column) = SplitShotIntoRowAndColumn(location);
+
+
+            bool isValidationLocation = ValidateGridLocation(playermodel, row, column);
+            bool isSpotOpen = ValidateShipLocation(playermodel, row, column);
+
+            if (isValidationLocation && isSpotOpen)
+            {
+                playermodel.ShipLocations.Add(new GridSpotModel
+                {
+                    SpotLetter = row.ToUpper(),
+                    SpotNumber = column,
+                    Status = GridSpotStaus.Ship
+                });
+                output = true;
+            }
+
+            return output;
+
+           
+        }
+
+        private static bool ValidateShipLocation(PlayerInfoModel playermodel, string row, int column)
+        {
+            bool isValidationLocation = true;
+
+            foreach (var ship in playermodel.ShipLocations)
+            {
+                if(ship.SpotLetter == row.ToUpper() && ship.SpotNumber == column)
+                {
+                    isValidationLocation = false;
+                }
+            }
+
+            return isValidationLocation;
+        }
+
+        private static bool ValidateGridLocation(PlayerInfoModel playermodel, string row, int column)
+        {
+            bool isValidationLocation = false;
+
+            foreach (var ship in playermodel.ShotGrid)
+            {
+                if (ship.SpotLetter == row.ToUpper() && ship.SpotNumber == column)
+                {
+                    isValidationLocation = true;
+                }
+            }
+
+            return isValidationLocation;
+
         }
 
         public static bool PlayerStillActive(PlayerInfoModel player)
@@ -78,12 +157,37 @@ namespace BattleshipLiteLibrary
 
         public static (string row, int column) SplitShotIntoRowAndColumn(string shot)
         {
-            throw new NotImplementedException();
+            string row = "";
+            int column = 0;
+            if (shot.Length != 2)
+            {
+                throw new ArgumentException("This was an invalid shot type", "shot")
+            }
+            char[] shotArray = shot.ToArray();
+
+            row = shotArray[0].ToString();
+            column = int.Parse(shotArray[1].ToString());
+
+            return (row, column);
+            
         }
 
-        public static bool ValidateShot(PlayerInfoModel activePlayer, string row, int column)
+        public static bool ValidateShot(PlayerInfoModel player, string row, int column)
         {
-            throw new NotImplementedException();
+            bool isValidShot = false;
+
+            foreach (var gridSpot in player.ShotGrid)
+            {
+                if (gridSpot.SpotLetter == row.ToUpper() && gridSpot.SpotNumber == column)
+                {
+                    if (gridSpot.Status == GridSpotStaus.Empty)
+                    {
+                        isValidShot = true;
+                    }
+                }
+            }
+
+            return isValidShot;
         }
 
         private static void AddGridSport(PlayerInfoModel playerModel, string letter, int number)
@@ -95,7 +199,7 @@ namespace BattleshipLiteLibrary
                 Status = GridSpotStaus.Empty
             };
 
-            playerModel.ShortGrid.Add(spot);
+            playerModel.ShotGrid.Add(spot);
 
             
         }
