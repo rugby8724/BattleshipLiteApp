@@ -33,6 +33,7 @@ namespace BattleshipLiteLibrary
                 if (ship.SpotLetter == row.ToUpper() && ship.SpotNumber == column)
                 {
                     isAHit = true;
+                    ship.Status = GridSpotStaus.Sunk;
                 }
             }
 
@@ -64,7 +65,6 @@ namespace BattleshipLiteLibrary
 
         public static void MarkShotResult(PlayerInfoModel player, string row, int column, bool isAHit)
         {
-            bool isValidHit = false;
 
             foreach (var gridSpot in player.ShotGrid)
             {
@@ -83,18 +83,18 @@ namespace BattleshipLiteLibrary
             }
         }
 
-        public static bool PlaceShip(PlayerInfoModel playermodel, string location)
+        public static bool PlaceShip(PlayerInfoModel playerModel, string location)
         {
             bool output = false;
             (string row, int column) = SplitShotIntoRowAndColumn(location);
 
 
-            bool isValidationLocation = ValidateGridLocation(playermodel, row, column);
-            bool isSpotOpen = ValidateShipLocation(playermodel, row, column);
+            bool isValidationLocation = ValidateGridLocation(playerModel, row, column);
+            bool isSpotOpen = ValidateShipLocation(playerModel, row, column);
 
             if (isValidationLocation && isSpotOpen)
             {
-                playermodel.ShipLocations.Add(new GridSpotModel
+                playerModel.ShipLocations.Add(new GridSpotModel
                 {
                     SpotLetter = row.ToUpper(),
                     SpotNumber = column,
@@ -161,7 +161,7 @@ namespace BattleshipLiteLibrary
             int column = 0;
             if (shot.Length != 2)
             {
-                throw new ArgumentException("This was an invalid shot type", "shot")
+                throw new ArgumentException("This was an invalid shot type", "shot");
             }
             char[] shotArray = shot.ToArray();
 

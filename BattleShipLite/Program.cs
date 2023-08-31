@@ -59,10 +59,19 @@ void RecordPlayerShot(PlayerInfoModel activePlayer, PlayerInfoModel opponent)
 
     do
     {
-        string shot = AskForShot();
-        (row, column) = GameLogic.SplitShotIntoRowAndColumn(shot);
+        string shot = AskForShot(activePlayer);
+        try
+        {
+            (row, column) = GameLogic.SplitShotIntoRowAndColumn(shot);
 
-        isValidShot = GameLogic.ValidateShot(activePlayer, row, column);
+            isValidShot = GameLogic.ValidateShot(activePlayer, row, column);
+        }
+        catch (Exception ex)
+        {
+
+            //Console.WriteLine("Error " + ex.Message);
+            isValidShot = false;
+        }
 
         if (isValidShot == false)
         {
@@ -73,11 +82,27 @@ void RecordPlayerShot(PlayerInfoModel activePlayer, PlayerInfoModel opponent)
     bool isAHit = GameLogic.IdentifyShotResult(opponent, row, column);
     
     GameLogic.MarkShotResult(activePlayer, row, column, isAHit);
+
+    DisplayShotResults(row, column, isAHit);
 }
 
-string AskForShot()
+void DisplayShotResults(string row, int column, bool isAHit)
 {
-    Console.WriteLine("Please enter your shot selection");
+    if (isAHit)
+    {
+        Console.WriteLine($"{row}{column} is a Hit");
+    }
+    else
+    {
+        Console.WriteLine($"{row}{column} is a Miss");
+    }
+    Console.WriteLine();
+
+}
+
+string AskForShot(PlayerInfoModel activePlayer)
+{
+    Console.WriteLine($" {activePlayer.UsersName}, please enter your shot selection");
     string output = Console.ReadLine();
 
     return output;
@@ -100,18 +125,20 @@ void DisplayShotGrid(PlayerInfoModel activePlayer)
         }
         else if (gridSpot.Status == GridSpotStaus.Hit)
         {
-            Console.Write(" X ");
+            Console.Write(" X  ");
         }
         else if (gridSpot.Status == GridSpotStaus.Miss)
         {
-            Console.Write(" O ");
+            Console.Write(" O  ");
         }
         else
         {
-            Console.Write(" ? ");
+            Console.Write(" ?  ");
         }
 
     }
+    Console.WriteLine();
+    Console.WriteLine();
 }
 
 static void WelcomeMessage()

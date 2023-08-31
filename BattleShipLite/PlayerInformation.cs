@@ -37,23 +37,33 @@ namespace BattleShipLite
 
         }
 
-        public static void PlaceShips(PlayerInfoModel playermodel)
+        public static void PlaceShips(PlayerInfoModel playerModel)
         {
             do
             {
                 Console.WriteLine($"Where do you want to place your ship number" +
-                    $"{playermodel.ShipLocations.Count + 1} ");
+                    $"{playerModel.ShipLocations.Count + 1} ");
                 string location = Console.ReadLine();
 
-                bool isValidLocation = GameLogic.PlaceShip(playermodel, location);
+                bool isValidLocation = false;
+
+                try
+                {
+                    isValidLocation = GameLogic.PlaceShip(playerModel, location);
+                }
+                catch (Exception ex)
+                {
+
+                    Console.WriteLine("Error " + ex.Message);
+                }
 
                 if (isValidLocation == false)
                 {
                     Console.WriteLine("That was not a valid location. Please Try again");
-                }
+                };
 
 
-            } while (playermodel.ShipLocations.Count < 5);
+            } while (playerModel.ShipLocations.Count < 5);
         }
     }
 }
